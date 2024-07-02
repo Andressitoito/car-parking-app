@@ -1,7 +1,20 @@
 {
   "expo": {
-    "name": "Car-Parking-App",
-    "slug": "Car-Parking-App",
-    "version": "1.0.0"
+    "name": "CarParkingApp",
+    "slug": "car-parking-app",
+    "version": "1.0.0",
+    "sdkVersion": "51.0.0",
+    "platforms": [
+      "android"
+    ],
+    "android": {
+      "package": "com.yourusername.carparkingapp",
+      "versionCode": 1
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d10f1621-11ca-4005-ab25-a1bd91e4cceb"
+      }
+    }
   }
 }
