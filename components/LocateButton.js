@@ -1,17 +1,33 @@
-// components/LocateButton.js
-import React from 'react';
-import { View, Button, StyleSheet, Alert, Linking } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Button, StyleSheet, Text, Alert, Linking } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+// import * as Linking from 'expo-linking';
 
-const LocateButton = ({ location }) => {
+const LocateButton = () => {
+ const [savedLocation, setSavedLocation] = useState(null);
+
+ useEffect(() => {
+  const loadSavedLocation = async () => {
+   try {
+    const location = await AsyncStorage.getItem('savedLocation');
+    if (location !== null) {
+     setSavedLocation(JSON.parse(location));
+    }
+   } catch (error) {
+    console.error('Failed to load saved location:', error);
+   }
+  };
+
+  loadSavedLocation();
+ }, []);
+
  const locateSpot = () => {
-  if (!location) {
-   Alert.alert('No spot saved');
-   return;
+  if (savedLocation) {
+   const url = `https://www.google.com/maps/search/?api=1&query=${savedLocation.latitude},${savedLocation.longitude}`;
+   Linking.openURL(url);
+  } else {
+   Alert.alert('No spot saved', 'There is no saved location to display.');
   }
-
-  const { latitude, longitude } = location;
-  const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
-  Linking.openURL(url);
  };
 
  return (

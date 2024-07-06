@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Button, StyleSheet, Text } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 
 const SaveButton = ({ onSaveComplete }) => {
@@ -9,6 +10,7 @@ const SaveButton = ({ onSaveComplete }) => {
  const saveLocation = async () => {
   console.log("saving location ");
   let { status } = await Location.requestForegroundPermissionsAsync();
+
   if (status !== 'granted') {
    alert('Permission to access location was denied');
    return;
@@ -17,7 +19,15 @@ const SaveButton = ({ onSaveComplete }) => {
   let currentLocation = await Location.getCurrentPositionAsync({});
   console.log("is saving true ");
   setIsSaving(true);
-  onSaveComplete(currentLocation.coords);
+
+  try {
+   await AsyncStorage.setItem('savedLocation', JSON.stringify(currentLocation.coords));
+   console.log("coords ", currentLocation.coords)
+   console.log("coords ", currentLocation)
+   onSaveComplete(currentLocation.coords);
+  } catch (error) {
+   console.error('Failed to save location:', error);
+  }
 
   setIsSaving(false);
   console.log("is saving false");
