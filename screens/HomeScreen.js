@@ -1,47 +1,20 @@
 // screens/HomeScreen.js
 import React, { useState } from 'react';
-import { View, Button, StyleSheet, Image, Alert, Text, Linking } from 'react-native';
-import * as Location from 'expo-location';
-import LoadingBar from '../components/LoadingBar';
+import { View, StyleSheet, Image, Text } from 'react-native';
+import SaveButton from '../components/SaveButton';
+import LocateButton from '../components/LocateButton';
 
 const HomeScreen = () => {
  const [location, setLocation] = useState(null);
- const [isSaving, setIsSaving] = useState(false);
- const [showLoadingBar, setShowLoadingBar] = useState(false);
 
- const saveLocation = async () => {
-  let { status } = await Location.requestForegroundPermissionsAsync();
-  if (status !== 'granted') {
-   Alert.alert('Permission to access location was denied');
-   return;
-  }
-
-  let currentLocation = await Location.getCurrentPositionAsync({});
-  setLocation(currentLocation.coords);
-  setShowLoadingBar(true);
- };
-
- const onLoadingComplete = () => {
-  setShowLoadingBar(false);
-  setIsSaving(false);
- };
-
- const locateSpot = () => {
-  if (!location) {
-   Alert.alert('No spot saved');
-   return;
-  }
-
-  const { latitude, longitude } = location;
-  const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
-  Linking.openURL(url);
+ const handleSaveComplete = (coords) => {
+  setLocation(coords);
  };
 
  return (
   <View style={styles.container}>
-   {showLoadingBar && <LoadingBar onComplete={onLoadingComplete} />}
-   <Button title="Save location" onPress={saveLocation} />
-   <Button title="Locate spot" onPress={locateSpot} />
+   <SaveButton onSaveComplete={handleSaveComplete} />
+   <LocateButton location={location} />
    {location ? (
     <Image
      style={styles.image}
@@ -59,6 +32,7 @@ const styles = StyleSheet.create({
   flex: 1,
   justifyContent: 'center',
   alignItems: 'center',
+  padding: 20,
  },
  image: {
   width: 300,
