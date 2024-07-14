@@ -1,36 +1,28 @@
 import React, { useState } from 'react';
-import { View, Button, StyleSheet, Text } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View, Button, Text, StyleSheet } from 'react-native';
 import * as Location from 'expo-location';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SaveButton = ({ onSaveComplete }) => {
- const [isSaving, setIsSaving] = useState(false);
  const [showAlert, setShowAlert] = useState(false);
 
  const saveLocation = async () => {
   console.log("saving location ");
   let { status } = await Location.requestForegroundPermissionsAsync();
-
   if (status !== 'granted') {
    alert('Permission to access location was denied');
    return;
   }
 
   let currentLocation = await Location.getCurrentPositionAsync({});
-  console.log("is saving true ");
-  setIsSaving(true);
+  console.log("Current location: ", currentLocation.coords);
 
-  try {
-   await AsyncStorage.setItem('savedLocation', JSON.stringify(currentLocation.coords));
-   console.log("coords ", currentLocation.coords)
-   console.log("coords ", currentLocation)
-   onSaveComplete(currentLocation.coords);
-  } catch (error) {
-   console.error('Failed to save location:', error);
-  }
+  // Save location to local storage
+  await AsyncStorage.setItem('savedLocation', JSON.stringify(currentLocation.coords));
 
-  setIsSaving(false);
-  console.log("is saving false");
+  onSaveComplete(currentLocation.coords);
+
+  // Show the alert for 2 seconds
   setShowAlert(true);
   setTimeout(() => {
    setShowAlert(false);
@@ -51,19 +43,18 @@ const SaveButton = ({ onSaveComplete }) => {
 
 const styles = StyleSheet.create({
  container: {
-  marginVertical: 10,
-  alignItems: 'center',
+  margin: 10,
  },
  alert: {
-  position: 'absolute',
-  bottom: 50,
-  backgroundColor: 'green',
+  marginTop: 10,
   padding: 10,
+  backgroundColor: 'green',
   borderRadius: 5,
  },
  alertText: {
   color: 'white',
-  fontSize: 16,
+  fontWeight: 'bold',
+  textAlign: 'center',
  },
 });
 
