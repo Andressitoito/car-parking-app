@@ -23,18 +23,12 @@ const HomeScreen = () => {
   setLocation(coords);
  };
  
- console.log("last location ", location)
  // Use location.latitude and location.longitude in key to trigger map reload
  const mapKey = location ? `${location.latitude}_${location.longitude}` : null;
 
  return (
   <View style={styles.container}>
-   <Button
-    title="button"
-    color="#841584"
-    accessibilityLabel="Learn more about this purple button"
-   />
-   <SaveButton onSaveComplete={handleSaveComplete} />
+     <SaveButton onSaveComplete={handleSaveComplete} />
    <LocateButton location={location} />
    {location ? (
     <MapView
@@ -67,7 +61,7 @@ const styles = StyleSheet.create({
   justifyContent: 'center',
   alignItems: 'center',
   padding: 20,
-  backgroundColor: '#333', // Dark grey background
+  backgroundColor: '#333',
  },
  map: {
   width: 300,
