@@ -35,3 +35,8 @@ yarn-error.*
 *.tsbuildinfo
 
 .env
+
+/home/dresito/GitHub/car-parking-app/android/app/src/main/AndroidManifest.xml
+/home/dresito/GitHub/car-parking-app/app.json
+android/app/src/main/AndroidManifest.xml
+app.json
