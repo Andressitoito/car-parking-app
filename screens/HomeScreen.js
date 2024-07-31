@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Button } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import SaveButton from '../components/SaveButton';
 import LocateButton from '../components/LocateButton';
@@ -7,45 +7,56 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HomeScreen = () => {
  const [location, setLocation] = useState(null);
+ const [saveTime, setSaveTime] = useState(null);
 
  useEffect(() => {
   const loadSavedLocation = async () => {
    const savedLocation = await AsyncStorage.getItem('savedLocation');
+   const savedTime = await AsyncStorage.getItem('saveTime');
    if (savedLocation) {
     setLocation(JSON.parse(savedLocation));
    }
+   if (savedTime) {
+    setSaveTime(savedTime);
+   }
   };
-  
+
   loadSavedLocation();
  }, []);
 
- const handleSaveComplete = (coords) => {
+ const handleSaveComplete = async (coords) => {
+  const currentTime = new Date().toLocaleString();
+  await AsyncStorage.setItem('saveTime', currentTime);
   setLocation(coords);
+  setSaveTime(currentTime);
  };
- 
+
  // Use location.latitude and location.longitude in key to trigger map reload
  const mapKey = location ? `${location.latitude}_${location.longitude}` : null;
 
  return (
   <View style={styles.container}>
-     <SaveButton onSaveComplete={handleSaveComplete} />
+   <SaveButton onSaveComplete={handleSaveComplete} />
    <LocateButton location={location} />
    {location ? (
-    <MapView
-     key={mapKey} // Use key prop to force re-render of MapView
-     provider={PROVIDER_GOOGLE} // Make sure Google Maps is configured correctly
-     style={styles.map}
-     initialRegion={{
-      latitude: location.latitude,
-      longitude: location.longitude,
-      latitudeDelta: 0.002,
-      longitudeDelta: 0.002,
-     }}
-    >
-     <Marker
-      coordinate={{ latitude: location.latitude, longitude: location.longitude }}
-     />
-    </MapView>
+    <>
+     <MapView
+      key={mapKey} // Use key prop to force re-render of MapView
+      provider={PROVIDER_GOOGLE} // Make sure Google Maps is configured correctly
+      style={styles.map}
+      initialRegion={{
+       latitude: location.latitude,
+       longitude: location.longitude,
+       latitudeDelta: 0.002,
+       longitudeDelta: 0.002,
+      }}
+     >
+      <Marker
+       coordinate={{ latitude: location.latitude, longitude: location.longitude }}
+      />
+     </MapView>
+     <Text style={styles.saveTimeText}>Saved at: {saveTime}</Text>
+    </>
    ) : (
     <View style={styles.noLocation}>
      <Text style={styles.noLocationText}>No location saved</Text>
@@ -78,6 +89,12 @@ const styles = StyleSheet.create({
  },
  noLocationText: {
   color: '#666',
+  // fontFamily: 'Roboto_400Regular',
+ },
+ saveTimeText: {
+  color: '#fff',
+  // fontFamily: 'Roboto_400Regular',
+  marginTop: 10,
  },
 });
 
